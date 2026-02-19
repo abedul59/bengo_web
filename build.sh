@@ -8,5 +8,5 @@ pip install -r requirements.txt
 python manage.py collectstatic --no-input
 
 # 執行資料庫遷移
-python manage.py makemigrationss
+python manage.py makemigrations
 python manage.py migrate
