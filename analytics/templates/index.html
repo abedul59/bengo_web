@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card mb-4 p-4">
+            <h4 class="mb-3">🔍 股票查詢</h4>
+            <div class="input-group mb-3">
+                <input type="text" id="searchInput" class="form-control" placeholder="輸入代號 (例如 2330)">
+                <button class="btn btn-primary" onclick="searchStock()">查詢</button>
+            </div>
+            <div class="mt-2">
+                <small class="text-muted">已建立資料：</small>
+                {% for s in recent_stocks %}
+                    <a href="/stock/{{ s.stock_id }}" class="badge bg-secondary text-decoration-none">{{ s.stock_id }} {{ s.stock_name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card p-4 border-success">
+            <h4 class="mb-3 text-success">📂 匯入數據</h4>
+            <p class="text-muted small">請上傳從 Bengo 桌面版匯出的 JSON 檔案。</p>
+            <form action="/upload/" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input type="file" class="form-control" name="json_file" accept=".json" required>
+                    <button class="btn btn-success" type="submit">上傳更新</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function searchStock() {
+        var id = document.getElementById('searchInput').value;
+        if(id) window.location.href = '/stock/' + id;
+    }
+</script>
+{% endblock %}
