@@ -73,7 +73,7 @@
 <script>
     // 如果有數據，繪製圖表
     const rawData = {{ chart_data|safe }};
-    if (rawData.dates) {
+    if (rawData.dates && rawData.dates.length > 0) {
         const ctx = document.getElementById('trendChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
@@ -85,31 +85,70 @@
                         data: rawData.major_pcts,
                         borderColor: '#dc3545', // 紅色
                         backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                        yAxisID: 'y',
+                        yAxisID: 'y', // 對應左側 Y 軸
                         fill: true,
-                        tension: 0.3
+                        tension: 0.3,
+                        pointRadius: 3, // 點的大小
+                        pointHoverRadius: 6
                     },
                     {
                         label: '股價',
                         data: rawData.prices,
                         borderColor: '#0d6efd', // 藍色
-                        yAxisID: 'y1',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        yAxisID: 'y1', // 對應右側 Y 軸
                         borderDash: [5, 5],
-                        tension: 0.3
+                        tension: 0.3,
+                        pointRadius: 0, // 股價通常不需要顯示太多點，隱藏圓點讓畫面乾淨
+                        pointHoverRadius: 6
                     }
                 ]
             },
             options: {
                 responsive: true,
-                interaction: { mode: 'index', intersect: false },
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    tooltip: {
+                        enabled: true,
+                        mode: 'index',
+                        intersect: false
+                    },
+                    legend: {
+                        position: 'top',
+                    }
+                },
                 scales: {
-                    y: { type: 'linear', display: true, position: 'left', title: {display: true, text: '持股 %'} },
-                    y1: { type: 'linear', display: true, position: 'right', grid: {drawOnChartArea: false}, title: {display: true, text: '股價'} }
+                    x: {
+                        ticks: {
+                            maxTicksLimit: 10 // 限制 X 軸日期顯示數量，避免擁擠
+                        }
+                    },
+                    y: { 
+                        type: 'linear', 
+                        display: true, 
+                        position: 'left', 
+                        title: {display: true, text: '持股 %'},
+                        // [關鍵優化] 讓 Y 軸自動縮放，不要從 0 開始
+                        beginAtZero: false, 
+                        grace: '5%' // 上下多留 5% 空間，線條不會頂天立地
+                    },
+                    y1: { 
+                        type: 'linear', 
+                        display: true, 
+                        position: 'right', 
+                        grid: {drawOnChartArea: false}, 
+                        title: {display: true, text: '股價'},
+                        // [關鍵優化] 股價也不要從 0 開始
+                        beginAtZero: false,
+                        grace: '5%'
+                    }
                 }
             }
         });
     }
 </script>
-
 </body>
 </html>
